@@ -1544,7 +1544,7 @@ ESTATUS main_FindAlertableThread(HANDLE hProcess, PHANDLE phAlertableThread)
 		eReturn = ESTATUS_MAIN_FINDALERTABLETHREAD_HEAPALLOC2_FAILED;
 		goto lblCleanup;
 	}
-
+	//CreateEvent and duplicate handles so the thread in target process can try to set the same event
 	for (DWORD dwIndex = 0; dwIndex < dwNumberOfProcessThreads; dwIndex++)
 	{
 		HANDLE hThread = phProcessThreadsHandles[dwIndex];
@@ -1555,7 +1555,7 @@ ESTATUS main_FindAlertableThread(HANDLE hProcess, PHANDLE phAlertableThread)
 			eReturn = ESTATUS_MAIN_FINDALERTABLETHREAD_CREATEEVENT_FAILED;
 			goto lblCleanup;
 		}
-		
+		//Duplicate Handle of the event in current process for target process
 		bErr = DuplicateHandle(
 			GetCurrentProcess(),
 			phLocalEvents[dwIndex],
@@ -1711,7 +1711,8 @@ int main()
 
 
 
-	eReturn = main_OpenProcessByName(L"calc.exe", &hProcess);
+	//eReturn = main_OpenProcessByName(L"calc.exe", &hProcess);
+	eReturn = main_OpenProcessByName(L"notepad.exe", &hProcess);//calc.exe is UWP in Win 10
 	if (ESTATUS_FAILED(eReturn))
 	{
 		goto lblCleanup;
